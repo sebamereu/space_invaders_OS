@@ -1,0 +1,30 @@
+Il progetto si divide in due versioni: versione processi e versione thread.
+
+Versione processi:
+    L'architettura del progetto della versione processi e' composta da una singola pipe, per la comunicazione tra produttori e consumatore.
+    I produttori sono tutti gli oggetti a schermo (astronave, navicelle, missili, bombe).
+    Il consumatore e' invece il processo che gestisce la stampa degli oggetti e controlla le collisioni di questi.
+
+    Le collisioni delle navicelle vengono gestite dividendo lo schermo in porzioni. Ogni porzione e' formata da una dimensione pari a 
+    1/numero_navicelle_per_colonna, infatti attraverso due macro, presenti nel file 'globale.h', è possibile aggiungere o diminuire a piacimento il numero di navicelle, fino ad arrivare a 3 navicelle per colonna, avendo un massimo di 3 colonne. Quando le navicelle arrivano al limite cambiano la loro direzione, invertendola.
+
+Versione thread:
+    L'architettura del progetto della versione thread e' composta da un buffer condiviso in memoria che gestisce la comunicazione tra 
+    produttori e consumatori. 
+    I produttori scrivono sul buffer, ed i consumatori leggono da questo. Tutto cio' avviene in maniera controllata, impedendo ai 
+    produttori di scrivere sul buffer pieno, ed ai consumatori di leggere dal buffer vuoto. Inoltre l'accesso al buffer viene regolato
+    in modo tale da avere un solo thread alla volta che ci accede. Con la stessa metodologia viene gestito il buffer dell'output, bloccando 
+    con un mutex tutte le funzioni che condividono questa risorsa.
+
+    Le collisioni delle navicelle vengono gestite dividendo lo schermo in porzioni. Ogni porzione e' formata da una dimensione pari a 
+    1/numero_navicelle_per_colonna, infatti attraverso due macro, presenti nel file 'globale.h', è possibile aggiungere o diminuire a piacimento il numero di navicelle, fino ad arrivare a 3 navicelle per colonna, avendo un massimo di 3 colonne. Quando le navicelle arrivano al limite cambiano la loro direzione, invertendola.
+
+
+scelte sul progetto:
+    -   l'astronave puo' sparare due missili per volta (e' presente un timer che temporizza gli spari)
+    -   le navicelle quando vengono colpite cambiano colore (verde, giallo, rosso)
+    -   le navicelle di livello 1 quando vengono colpite,diventano navicelle di livello 2, cambiando forma della sprite
+    -   quando la finestra del terminale ha dimensione minore di 90x26, l'utente verrà avvisato che gli conviene usare la dimensione massima del   terminale. 		Altrimenti non potrà visualizzare la scritta 'space defender'.
+    -   il ridimensionamento dello schermo puo' avvenire durante l'esecuzione dell'introduzione. Non e' quindi necessario il suo riavvio per 
+        ridimensionare il terminale
+    -   I per dare un senso di movimento orizzontale abbiao inserito i bordi inferiore e superiore che scorreranno orizzontalmente
