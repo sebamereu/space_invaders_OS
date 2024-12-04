@@ -1,30 +1,38 @@
-Il progetto si divide in due versioni: versione processi e versione thread.
+The project is divided into two versions: Process-Based Version and Thread-Based Version.
 
-Versione processi:
-    L'architettura del progetto della versione processi e' composta da una singola pipe, per la comunicazione tra produttori e consumatore.
-    I produttori sono tutti gli oggetti a schermo (astronave, navicelle, missili, bombe).
-    Il consumatore e' invece il processo che gestisce la stampa degli oggetti e controlla le collisioni di questi.
+Process-Based Version
+Architecture:
+The architecture of the process-based version is composed of a single pipe for communication between producers and the consumer.
 
-    Le collisioni delle navicelle vengono gestite dividendo lo schermo in porzioni. Ogni porzione e' formata da una dimensione pari a 
-    1/numero_navicelle_per_colonna, infatti attraverso due macro, presenti nel file 'globale.h', è possibile aggiungere o diminuire a piacimento il numero di navicelle, fino ad arrivare a 5 navicelle per colonna, avendo un massimo di 3 colonne . Quando le navicelle arrivano al limite cambiano la loro direzione, invertendola.
+Producers: All objects on the screen (spaceship, enemy ships, missiles, bombs).
+Consumer: A process responsible for managing the rendering of objects and handling collisions.
+Collision Handling:
+The screen is divided into sections to manage enemy ship collisions. Each section size is proportional to 1 / number_of_ships_per_column.
+Two macros, defined in the file globale.h, allow dynamic adjustment of the number of enemy ships, up to a maximum of 5 ships per column and 3 columns in total.
+When enemy ships reach the boundary of the screen, they reverse their direction.
 
-Versione thread:
-    L'architettura del progetto della versione thread e' composta da un buffer condiviso in memoria che gestisce la comunicazione tra 
-    produttori e consumatori. 
-    I produttori scrivono sul buffer, ed i consumatori leggono da questo. Tutto cio' avviene in maniera controllata, impedendo ai 
-    produttori di scrivere sul buffer pieno, ed ai consumatori di leggere dal buffer vuoto. Inoltre l'accesso al buffer viene regolato
-    in modo tale da avere un solo thread alla volta che ci accede. Con la stessa metodologia viene gestito il buffer dell'output, bloccando 
-    con un mutex tutte le funzioni che condividono questa risorsa.
+Thread-Based Version
+Architecture:
+The thread-based version uses a shared buffer in memory to handle communication between producers and consumers.
 
-    Le collisioni delle navicelle vengono gestite dividendo lo schermo in porzioni. Ogni porzione e' formata da una dimensione pari a 
-    1/numero_navicelle_per_colonna, infatti attraverso due macro, presenti nel file 'globale.h', è possibile aggiungere o diminuire a piacimento il numero di navicelle fino ad arrivare a 5 navicelle per colonna, avendo un massimo di 3 colonne. Quando le navicelle arrivano al limite cambiano la loro direzione, invertendola.
+Producers write to the buffer.
+Consumers read from the buffer.
+This process is controlled to prevent:
 
+Producers from writing to a full buffer.
+Consumers from reading from an empty buffer.
+Access to the buffer is regulated so that only one thread at a time can access it. Similarly, the output buffer is managed using mutexes, ensuring exclusive access to shared resources.
 
-scelte sul progetto:
-    -   l'astronave puo' sparare due missili per volta (e' presente un timer che temporizza gli spari)
-    -   le navicelle quando vengono colpite cambiano colore (verde, giallo, rosso)
-    -   le navicelle di livello 1 quando vengono colpite,diventano navicelle di livello 2, cambiando forma della sprite
-    -   quando la finestra del terminale ha dimensione minore di 90x26, l'utente verrà avvisato che gli conviene usare la dimensione massima del   terminale. Altrimenti non potrà visualizzare la scritta 'space defender'.
-    -   il ridimensionamento dello schermo puo' avvenire durante l'esecuzione dell'introduzione. Non e' quindi necessario il suo riavvio per 
-        ridimensionare il terminale
-    -   I per dare un senso di movimento orizzontale abbiao inserito i bordi inferiore e superiore che scorreranno orizzontalmente
+Collision Handling:
+The screen is divided into sections to manage enemy ship collisions, just as in the process-based version.
+Section sizes are proportional to 1 / number_of_ships_per_column, with macros in globale.h enabling dynamic adjustments. The maximum configuration supports 5 ships per column and 3 columns in total.
+When enemy ships reach the screen boundaries, they reverse their direction.
+
+Design Choices
+The spaceship can fire two missiles at a time (with a timer controlling the rate of fire).
+Enemy ships change color when hit:
+Green → Yellow → Red.
+Level 1 enemy ships, when hit, evolve into Level 2 ships with a different sprite shape.
+If the terminal window is smaller than 90x26, the user will be notified to maximize the terminal for the best experience. Otherwise, the "Space Defender" text won't be displayed.
+The terminal size can be adjusted during the introduction phase without needing to restart the program.
+To provide a sense of horizontal motion, the top and bottom borders scroll horizontally.
